@@ -41,8 +41,11 @@ func accessLog(inner http.Handler) http.Handler {
 		if err != nil {
 			log.Errorf("new tracer failed: %s", err)
 		}
-		span := tracer.StartSpan("default")
+		span := tracer.StartSpan(r.URL.Path)
 		defer span.Finish()
+		span.SetTag("http.uri", r.URL.Path)
+		span.SetTag("http.method", r.Method)
+		span.SetTag("http.remoteip", r.RemoteAddr)
 		ctx := opentracing.ContextWithSpan(context.Background(), span)
 		r.WithContext(ctx)
 
