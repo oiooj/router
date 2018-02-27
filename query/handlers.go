@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/opentracing/opentracing-go"
+
 	"github.com/lodastack/router/config"
 	"github.com/lodastack/router/influx"
 	"github.com/lodastack/router/loda"
@@ -159,7 +161,8 @@ func (s *Service) queryHandler(resp http.ResponseWriter, req *http.Request, _ ht
 		errResp(resp, http.StatusBadRequest, "ah, Don't support drop")
 		return
 	}
-
+	span := opentracing.SpanFromContext(req.Context())
+	span.SetOperationName("query")
 	cluster := params.Get("cluster")
 	_ns := params.Get("db")
 
@@ -177,7 +180,7 @@ func (s *Service) queryHandler(resp http.ResponseWriter, req *http.Request, _ ht
 	} else {
 		ns = _ns
 	}
-
+	span.SetTag("db.name", ns)
 	influxdbs, err := loda.InfluxDBs(ns)
 	if err != nil {
 		errResp(resp, http.StatusInternalServerError, err.Error())

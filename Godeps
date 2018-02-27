@@ -1,6 +1,12 @@
 github.com/BurntSushi/toml 3883ac1ce943878302255f538fce319d23226223
+github.com/apache/thrift 53dd39833a08ce33582e5ff31fa18bb4735d6731
 github.com/bitly/go-nsq a3aee1d8e104a99d8fedffe2c45832df6a96d735
+github.com/codahale/hdrhistogram 3a0bb77429bd3a61596f5e8a3172445844342120
 github.com/grafana/grafana 0841e841f53cbdebc2073caad3afbb44e4890eb5
 github.com/julienschmidt/httprouter 6aacfd5ab513e34f7e64ea9627ab9670371b34e7
 github.com/lodastack/log b25a4d2e8c2235ee21a1663198a4b26c7f7b4aaa
 github.com/mreiferson/go-snappystream 028eae7ab5c4c9e2d1cb4c4ca1e53259bbe7e504
+github.com/opentracing/opentracing-go 1361b9cd60be79c4c3a7fa9841b3c132e40066a7
+github.com/uber/jaeger-client-go d7f08d5091e1f6a16d4467c2b7c4c3080e874195
+github.com/uber/jaeger-lib 9ddea2d8d7b51470c3620da2913c74798471960c
+golang.org/x/net 9dfe39835686865bff950a07b394c12a98ddc811

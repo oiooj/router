@@ -2,6 +2,7 @@ package query
 
 import (
 	"compress/gzip"
+	"context"
 	"fmt"
 	"io"
 	"net"
@@ -13,10 +14,38 @@ import (
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/lodastack/log"
+	opentracing "github.com/opentracing/opentracing-go"
+
+	"github.com/uber/jaeger-client-go"
+	jaegerClientConfig "github.com/uber/jaeger-client-go/config"
 )
 
 func accessLog(inner http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		cfg := jaegerClientConfig.Configuration{
+			Sampler: &jaegerClientConfig.SamplerConfig{
+				Type:  "const",
+				Param: 1,
+			},
+			Reporter: &jaegerClientConfig.ReporterConfig{
+				LogSpans:            true,
+				BufferFlushInterval: 1 * time.Second,
+				LocalAgentHostPort:  "localhost:6831",
+			},
+		}
+		tracer, closer, err := cfg.New(
+			"monitor-router-api",
+			jaegerClientConfig.Logger(jaeger.StdLogger),
+		)
+		defer closer.Close()
+		if err != nil {
+			log.Errorf("new tracer failed: %s", err)
+		}
+		span := tracer.StartSpan("default")
+		defer span.Finish()
+		ctx := opentracing.ContextWithSpan(context.Background(), span)
+		r.WithContext(ctx)
+
 		stime := time.Now().UnixNano() / 1e3
 		inner.ServeHTTP(w, r)
 		dur := time.Now().UnixNano()/1e3 - stime
